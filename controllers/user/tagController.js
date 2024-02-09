@@ -8,10 +8,10 @@ const TRUE = "true";
 
 // NOTE: GET ALL TAGS
 export const getTags = catchAsyncError(async (req, res, next) => {
-  const userId = req.userId;
+  const user = req.userId;
 
   const tags = await Tag.find({
-    userId,
+    user,
   })
     .lean()
     .select("-__v")
@@ -19,17 +19,15 @@ export const getTags = catchAsyncError(async (req, res, next) => {
       updatedAt: -1,
     });
 
-  const tagsWithId = changeUnderScoreId(tags);
-
   res.status(200).json({
     message: "All tags",
-    data: tagsWithId,
+    data: tags,
   });
 });
 
 // NOTE: CREATE TAG
 export const createTag = catchAsyncError(async (req, res, next) => {
-  const userId = req.userId;
+  const user = req.userId;
 
   const { name, isAddedToNote, noteId } = req.body;
 
@@ -39,40 +37,36 @@ export const createTag = catchAsyncError(async (req, res, next) => {
   // WORK: TAG IS CREATED FROM NOTE AND ADDED TO NOTE AT THE SAME TIME
   if (isAddedToNote === TRUE && noteId) {
     const newTag = await Tag.create({
-      userId,
+      user,
       title: name,
-      noteList: [noteId],
     });
 
-    await Note.updateOne(
+    const updatedNote = await Note.updateOne(
       {
         _id: noteId,
       },
       {
-        $push: { tagList: newTag._id },
+        $push: { tags: newTag._id },
       }
     );
 
-    const tagWithId = changeUnderScoreId(newTag);
-
     res.status(200).json({
       message: "Tag is created and Added to Note",
-      data: tagWithId,
+      tag: newTag,
+      note: updatedNote,
     });
     return;
   }
 
   // WORK: TAG IS CREATED FROM TAG
   const newTag = await Tag.create({
-    userId,
+    user,
     title: name,
   });
 
-  const tagWithId = changeUnderScoreId(newTag);
-
   res.status(200).json({
     message: "tag is created",
-    data: tagWithId,
+    data: newTag,
   });
 });
 
@@ -141,32 +135,30 @@ export const updateTag = catchAsyncError(async (req, res, next) => {
 // NOTE: DELETE TAG
 
 export const deleteTag = catchAsyncError(async (req, res, next) => {
-  const userId = req.userId;
+  const user = req.userId;
 
   const { id } = req.query;
 
   if (!id) return next(new HandleGlobalError("Tag Name must be provided", 404));
 
-  const promises = [
-    // WORK: DELETE TAG FROM TAG
-    Tag.deleteOne({
-      _id: id,
-    }),
-    // WORK: DELETE TAG FROM NOTES
-    Note.updateMany(
-      {
-        userId,
-        tagList: { $elemMatch: id },
-      },
-      {
-        $pull: { tagList: id },
-      }
-    ),
-  ];
+  // WORK: DELETE TAG FROM TAG
+  const deletedTag = await Tag.deleteOne({
+    _id: id,
+  });
 
-  await Promise.all(promises);
+  // WORK: DELETE TAG FROM NOTES
+  const updatedNote = await Note.updateMany(
+    {
+      user,
+      tags: id,
+    },
+    {
+      $pull: { tags: id },
+    }
+  );
 
   res.status(200).json({
     message: "Tag is deleted",
+    data: updatedNote,
   });
 });

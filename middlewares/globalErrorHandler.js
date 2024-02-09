@@ -1,6 +1,27 @@
+import { environment } from "../utils/environment.js";
+
 const globalErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 400;
   err.status = err.status || "Error";
+
+  if (err.name === "MulterError" && err.code === "LIMIT_UNEXPECTED_FILE") {
+    err.statusCode = 404;
+    err.status = "Multer Error";
+    err.message =
+      "Please check your file once again. There is some issue in it.";
+  }
+
+  if (err.name === "TypeError") {
+    err.statusCode = 404;
+    err.status = "Server Error";
+    err.message = "Server is download. Please login again after sometime!";
+  }
+
+  if (err.name === "TokenError") {
+    err.statusCode = 400;
+    err.status = "unAuthorized";
+    err.message = "Sorry, your OAuth token has expired";
+  }
 
   if (err.name === "TokenExpiredError") {
     err.statusCode = 401;
@@ -11,16 +32,7 @@ const globalErrorHandler = (err, req, res, next) => {
   if (err.name === "ValidationError") {
     err.statusCode = 401;
     err.status = "Error";
-    err.message = "";
-
-    Object.keys(err.errors).forEach((key) => {
-      const value = err.errors[key];
-      console.log(err.errors);
-
-      err.message += value.message + ", ";
-    });
-
-    err.message = err.message.split(",").slice(0, -1).join(",");
+    err.message = `Validation Error : ${err.message}`;
   }
 
   if (err.code === 11000) {
@@ -55,6 +67,11 @@ const globalErrorHandler = (err, req, res, next) => {
     err.statusCode = 404;
     err.status = "Axios Error";
     err.message = "Please check your URL or you API key or Bearer Token.";
+  }
+
+  if (err.name === "InternalOAuthError") {
+    res.redirect(environment.CLIENT_CHECKLOGIN_URL);
+    return;
   }
 
   const errorResponse = {

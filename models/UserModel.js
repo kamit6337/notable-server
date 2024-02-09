@@ -1,37 +1,87 @@
 import mongoose from "mongoose";
-import { Notebook } from "./NotebookModel.js";
+import validation from "validator";
+import bcrypt from "bcryptjs";
+import { environment } from "../utils/environment.js";
+import { Notebook } from "../models/NotebookModel.js";
 
-const userSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: [true, "Please Provide ID"],
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      validate: {
+        validator: function (value) {
+          return validation.isEmail(value);
+        },
+        message: (props) => `${props.value} is not a valid email`,
+      },
+    },
+    password: {
+      type: String,
+      default: null,
+    },
+    photo: {
+      type: String,
+      required: [true, "Please provide pic"],
+    },
+    OAuthId: {
+      type: String,
+      default: null,
+    },
+    OAuthProvider: {
+      type: String,
+      default: null,
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    loginCount: {
+      type: Number,
+      default: 1,
+    },
+    lastLogin: {
+      type: Date,
+      default: Date.now(),
+    },
+    doubleVerify: {
+      type: Boolean,
+      default: false,
+    },
   },
-  name: {
-    type: String,
-    required: true,
-  },
-  email_Id: {
-    type: String,
-    required: [true, "Email need to provide."],
-  },
-  OAuthProvider: {
-    type: String,
-    required: [true, "OAUth Provider need to provide."],
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
-  loginCount: Number,
-  lastLoginAt: {
-    type: Date,
-    default: Date.now(),
-  },
+  {
+    timestamps: true,
+  }
+);
+
+userSchema.methods.checkPassword = function (given_password) {
+  //   WORK: CHECK IF USER PASSWORD DOES NOT MATCH WITH HASH PASSWORD
+  const checkPassword = bcrypt.compareSync(
+    String(given_password),
+    this.password
+  ); // Boolean
+
+  return checkPassword;
+};
+
+userSchema.pre("save", function (next) {
+  // Check if there's a password to hash
+  if (this.password) {
+    this.password = bcrypt.hashSync(this.password, environment.SALT_ROUND);
+  }
+
+  next();
 });
 
 userSchema.pre("save", async function (next) {
   await Notebook.create({
-    userId: this._id,
+    user: this._id,
     title: "My Notebook",
     primary: true,
   });

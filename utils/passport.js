@@ -17,20 +17,6 @@ passport.use(
   )
 );
 
-// NOTE: FACEBOOK OAUTH
-passport.use(
-  new FacebookStrategy(
-    {
-      clientID: environment.FACEBOOK_APP_ID,
-      clientSecret: environment.FACEBOOK_APP_SECRET,
-      callbackURL: "/auth/facebook/callback",
-      // profileFields: ["id", "displayName", "photos", "email"],
-    },
-    function (accessToken, refreshToken, profile, done) {
-      done(null, profile);
-    }
-  )
-);
 
 passport.serializeUser((user, done) => {
   done(null, user);

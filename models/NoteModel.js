@@ -2,18 +2,16 @@ import mongoose from "mongoose";
 
 const noteSchema = new mongoose.Schema(
   {
-    userId: {
-      type: String,
-      required: [true, "Please provide a User ID"],
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "UserID must be provided"],
       select: false,
     },
-    notebookId: {
-      type: String,
+    notebook: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Notebook",
       required: [true, "Please provide a Notebook Id"],
-    },
-    notebookTitle: {
-      type: String,
-      required: [true, "Please provide a Notebook Title"],
     },
     title: {
       type: String,
@@ -23,21 +21,19 @@ const noteSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       default: null,
     },
-    createdAt: {
-      type: Date,
-      default: Date.now(),
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now(),
-    },
+    tags: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tag",
+      },
+    ],
     shortcut: {
       type: Boolean,
       default: false,
     },
   },
   {
-    strict: false,
+    timestamps: true,
   }
 );
 

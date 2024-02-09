@@ -2,9 +2,10 @@ import mongoose from "mongoose";
 
 const tagSchema = new mongoose.Schema(
   {
-    userId: {
-      type: String,
-      required: [true, "Please provide User ID"],
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "UserID must be provided"],
       select: false,
     },
     title: {
@@ -12,21 +13,9 @@ const tagSchema = new mongoose.Schema(
       unique: [true, "Tag Title should be unique"],
       required: [true, "Please provide a Tag Title"],
     },
-    createdAt: {
-      type: Date,
-      default: Date.now(),
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now(),
-    },
-    noteList: {
-      type: [String],
-      default: [],
-    },
   },
   {
-    strict: false,
+    timestamps: true,
   }
 );
 

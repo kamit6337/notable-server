@@ -47,7 +47,7 @@ router
   .patch(updateNote)
   .delete(deleteNote);
 
-// NOTE: All REQUEST RELATED TO TAG
+// // NOTE: All REQUEST RELATED TO TAG
 router
   .route("/tags")
   .get(getTags)
@@ -55,16 +55,14 @@ router
   .patch(updateTag)
   .delete(deleteTag);
 
-// NOTE: All REQUEST RELATED TO SHORTCUT
-router
-  .route("/shortcuts")
-  .get(getShortcuts)
-  .post(createShortcut)
-  .patch(updateShortcut);
+// // NOTE: All REQUEST RELATED TO SHORTCUT
+// router
+//   .route("/shortcuts")
+//   .get(getShortcuts)
+//   .post(createShortcut)
+//   .patch(updateShortcut);
 
 // NOTE: All OTHER REQUEST
-router.get("/notebook/notes", getNotebookNotes);
-router.get("/tag/notes", getTagNotes);
 router.patch("/defaultNotebook", changeDefaultNotebook);
 
 export default router;

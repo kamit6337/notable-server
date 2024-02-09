@@ -1,17 +1,17 @@
 import HandleGlobalError from "../utils/HandleGlobalError.js";
 import catchAsyncError from "../utils/catchAsyncError.js";
-import jwt from "jsonwebtoken";
-import { environment } from "../utils/environment.js";
 import { User } from "../models/UserModel.js";
+import verifyWebToken from "../utils/verifyWebToken.js";
+import Req from "../utils/Req.js";
 
 const protectRoute = catchAsyncError(async (req, res, next) => {
-  const { token } = req.cookies;
+  const { token } = Req(req);
 
   if (!token) {
     return next(new HandleGlobalError("UnAuthorized Access", 403, "Failed"));
   }
 
-  const decodedId = jwt.verify(token, environment.JWT_SECRET_KEY);
+  const decodedId = verifyWebToken(token);
 
   const findUser = await User.findById(decodedId.id);
 
@@ -25,7 +25,8 @@ const protectRoute = catchAsyncError(async (req, res, next) => {
     );
   }
 
-  req.userId = decodedId.id;
+  req.userId = String(findUser._id);
+  req.user = findUser;
 
   next();
 });

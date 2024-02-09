@@ -9,10 +9,10 @@ const TRUE = "true";
 
 // NOTE: GET NOTES
 export const getNotes = catchAsyncError(async (req, res, next) => {
-  const userId = req.userId;
+  const user = req.userId;
 
   const notes = await Note.find({
-    userId,
+    user,
   })
     .lean()
     .select("-__v")
@@ -20,132 +20,106 @@ export const getNotes = catchAsyncError(async (req, res, next) => {
       updatedAt: -1,
     });
 
-  const notesWithId = changeUnderScoreId(notes);
-
   res.status(200).json({
     message: "Notes",
-    data: notesWithId,
+    data: notes,
   });
 });
 
 // NOTE: CREATE NOTES
 export const createNote = catchAsyncError(async (req, res, next) => {
-  const userId = req.userId;
+  const user = req.userId;
 
-  const { id, name } = req.body; //THIS IS NOTEBOOK ID and NOTEBOOK NAME IN WHICH NOTE IS CREATED
+  const { id } = req.body; //THIS IS NOTEBOOK ID and NOTEBOOK NAME IN WHICH NOTE IS CREATED
 
-  if (!id || !name)
+  if (!id)
     return next(
       new HandleGlobalError("Notebook ID and Name must be provided, 403")
     );
 
   const note = await Note.create({
-    userId,
-    notebookId: id,
-    notebookTitle: name,
+    user,
+    notebook: id,
   });
-
-  const noteWithId = changeUnderScoreId(note);
 
   res.status(200).json({
     message: "New Note created",
-    data: noteWithId,
+    data: note,
   });
 });
 
 // NOTE: UPDATE NOTES
 export const updateNote = catchAsyncError(async (req, res, next) => {
-  const userId = req.userId;
-
-  const { id, name, content, isTagAdd, isTagRemove, tagId } = req.body;
+  const { id, title, body, isTagAdd, isTagRemove, tagId } = req.body;
 
   if (!id)
     return next(new HandleGlobalError("Note Name must be provided", 404));
 
+  const obj = {};
+
+  if (title) {
+    obj.title = title;
+  }
+
+  if (body) {
+    obj.body = body;
+  }
+
   // WORK: UPDATE NOTE TITLE IN NOTE AND TAGS
-  if (name) {
-    await Note.findOneAndUpdate(
+  if (title) {
+    const updatedNote = await Note.findOneAndUpdate(
       {
         _id: id,
       },
       {
-        title: name,
+        ...obj,
+      },
+      {
+        new: true,
       }
     );
 
     res.status(200).json({
       message: "Changed Note Title",
-    });
-    return;
-  }
-
-  // WORK: UPDATE THE NOTE CONTENT
-  if (content) {
-    await Note.findOneAndUpdate(
-      {
-        _id: id,
-      },
-      {
-        content: content,
-      }
-    );
-
-    res.status(200).json({
-      message: "Content is Saved",
+      data: updatedNote,
     });
     return;
   }
 
   // WORK: ADD TAG TO NOTE
-  if (isTagAdd === TRUE && tagId) {
-    const promises = [
-      Note.findOneAndUpdate(
-        { _id: id },
-        {
-          $push: { tagList: tagId },
-        }
-      ),
-      Tag.findOneAndUpdate(
-        {
-          _id: tagId,
-        },
-        {
-          $push: { noteList: id },
-        }
-      ),
-    ];
-
-    await Promise.all(promises);
+  if (isTagAdd && tagId) {
+    const updatedNote = await Note.findOneAndUpdate(
+      { _id: id },
+      {
+        $push: { tags: tagId },
+      },
+      {
+        new: true,
+      }
+    );
 
     res.status(200).json({
       message: "Tag added to Note",
+      data: updatedNote,
     });
     return;
   }
 
   // WORK: REMOVE TAG FROM NOTE
-  if (isTagRemove === TRUE && tagId) {
-    const promises = [
-      Note.findOneAndUpdate(
-        { _id: id },
-        {
-          $pull: { tagList: tagId },
-        }
-      ),
-      Tag.findOneAndUpdate(
-        {
-          _id: tagId,
-        },
-        {
-          $pull: { noteList: id },
-        }
-      ),
-    ];
-
-    await Promise.all(promises);
+  if (isTagRemove && tagId) {
+    const updatedNote = await Note.findOneAndUpdate(
+      { _id: id },
+      {
+        $pull: { tags: tagId },
+      },
+      {
+        new: true,
+      }
+    );
 
     res.status(200).json({
       message: "Tag removed from Note",
+      data: updatedNote,
     });
     return;
   }
@@ -153,32 +127,15 @@ export const updateNote = catchAsyncError(async (req, res, next) => {
 
 // NOTE: DELETE NOTES
 export const deleteNote = catchAsyncError(async (req, res, next) => {
-  const userId = req.userId;
-
   const { id } = req.query;
 
   if (!id)
     return next(new HandleGlobalError("Note Name must be provided", 404));
 
-  const promises = [
-    // WORK: DELETE NOTE FROM NOTE
-    Note.deleteOne({
-      _id: id,
-    }),
-
-    // WORK: DELETE ALL NOTE PRESENT IN TAG
-    Tag.updateMany(
-      {
-        userId,
-        noteList: { $elemMatch: id },
-      },
-      {
-        $pull: { noteList: id },
-      }
-    ),
-  ];
-
-  await Promise.all(promises);
+  // WORK: DELETE NOTE FROM NOTE
+  await Note.deleteOne({
+    _id: id,
+  });
 
   res.status(200).json({
     message: "Note is deleted",
