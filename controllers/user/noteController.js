@@ -30,17 +30,23 @@ export const getNotes = catchAsyncError(async (req, res, next) => {
 export const createNote = catchAsyncError(async (req, res, next) => {
   const user = req.userId;
 
-  const { id } = req.body; //THIS IS NOTEBOOK ID and NOTEBOOK NAME IN WHICH NOTE IS CREATED
+  const { id, tagId } = req.body; //THIS IS NOTEBOOK ID and NOTEBOOK NAME IN WHICH NOTE IS CREATED
 
   if (!id)
     return next(
       new HandleGlobalError("Notebook ID and Name must be provided, 403")
     );
 
-  const note = await Note.create({
+  const obj = {
     user,
     notebook: id,
-  });
+  };
+
+  if (tagId) {
+    obj.tags = [tagId];
+  }
+
+  const note = await Note.create(obj);
 
   res.status(200).json({
     message: "New Note created",
