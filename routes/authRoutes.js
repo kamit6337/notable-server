@@ -10,8 +10,12 @@ import signup from "../controllers/auth/custom/signup.js";
 import loginCheck from "../controllers/auth/custom/loginCheck.js";
 import login from "../controllers/auth/custom/login.js";
 import forgotPassword from "../controllers/auth/custom/forgotPassword.js";
+import updateUserProfile from "../controllers/auth/custom/updateUserProfile.js";
 
 const router = express.Router();
+
+// NOTE: UPDATE USER PASSWORD
+router.patch("/update", updateUserProfile);
 
 // NOTE: FORGOT PASSWORD
 router.post("/forgot", forgotPassword);

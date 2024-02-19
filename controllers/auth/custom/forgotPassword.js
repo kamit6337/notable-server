@@ -37,8 +37,10 @@ const forgotPassword = catchAsyncError(async (req, res, next) => {
   const obj = { email, otp, date };
 
   if (Array.isArray(req.session?.confirmOTP)) {
-    // If it's an array, iterate over it
-    req.session.confirmOTP.push(obj);
+    let arr = req.session.confirmOTP;
+    arr = arr.filter((obj) => obj.email !== email);
+    arr.push(obj);
+    req.session.confirmOTP = arr;
   } else {
     // If it's not an array, create a new array with obj
     req.session.confirmOTP = [obj];
@@ -51,7 +53,7 @@ const forgotPassword = catchAsyncError(async (req, res, next) => {
 
   // Set up email options
   const mailOptions = {
-    from: `onClick ${environment.MY_GMAIL_ID}`,
+    from: `Notable ${environment.MY_GMAIL_ID}`,
     to: email,
     subject: "Your OTP for verification",
     html: htmlTemplate,

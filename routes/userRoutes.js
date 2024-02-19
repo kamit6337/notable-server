@@ -18,14 +18,10 @@ import {
   updateTag,
 } from "../controllers/user/tagController.js";
 
-import {
-  changeDefaultNotebook,
-  getNotebookNotes,
-  getTagNotes,
-} from "../controllers/user/otherRelatedController.js";
+import { changeDefaultNotebook } from "../controllers/user/otherRelatedController.js";
+
 import {
   createShortcut,
-  getShortcuts,
   updateShortcut,
 } from "../controllers/user/shortcutController.js";
 
@@ -56,13 +52,9 @@ router
   .delete(deleteTag);
 
 // // NOTE: All REQUEST RELATED TO SHORTCUT
-// router
-//   .route("/shortcuts")
-//   .get(getShortcuts)
-//   .post(createShortcut)
-//   .patch(updateShortcut);
+router.route("/shortcut").post(createShortcut).patch(updateShortcut);
 
 // NOTE: All OTHER REQUEST
-router.patch("/defaultNotebook", changeDefaultNotebook);
+router.patch("/primary", changeDefaultNotebook);
 
 export default router;

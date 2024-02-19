@@ -1,99 +1,57 @@
 import catchAsyncError from "../../utils/catchAsyncError.js";
 import { Notebook } from "../../models/NotebookModel.js";
 import { Note } from "../../models/NoteModel.js";
-import { changeUnderScoreId } from "../../utils/javaScript/basicJS.js";
 import HandleGlobalError from "../../utils/HandleGlobalError.js";
-
-const TRUE = "true";
-
-// NOTE: GET ALL NOTES AND NOTEBOOKS IN SHORTCUT
-export const getShortcuts = catchAsyncError(async (req, res, next) => {
-  const userId = req.userId;
-
-  // WORK: NOTEBOOKS WHICH IS SHORTCUTTED
-  const notebooks = await Notebook.find({
-    userId,
-    shortcut: true,
-  })
-    .lean()
-    .select("-__v")
-    .sort({ updatedAt: -1 });
-
-  let notebookNotes;
-  if (notebooks && notebooks?.length > 0) {
-    const notebooksWithId = changeUnderScoreId(notebooks);
-
-    const promises = notebooksWithId.map(async (notebook) => {
-      const notes = await Note.find({
-        userId,
-        notebookId: notebook._id,
-      })
-        .lean()
-        .select("-__v")
-        .sort({ updatedAt: -1 });
-
-      const notesWithId = changeUnderScoreId(notes);
-
-      notebook.noteList = notesWithId;
-
-      return notebook;
-    });
-
-    notebookNotes = await Promise.all(promises);
-  }
-
-  // WORK: NOTES WHICH IS SHORTCUTTED
-  const notes = await Note.find({
-    userId,
-    shortcut: true,
-  })
-    .lean()
-    .select("-__v")
-    .sort({ updatedAt: -1 });
-
-  const notesWithId = changeUnderScoreId(notes);
-
-  res.status(200).json({
-    message: "All notes and notebooks of shortcut",
-    notebooks: notebookNotes,
-    notes: notesWithId,
-  });
-});
 
 // NOTE: MAKE NOTE AND NOTEBOOK SHORTCUT
 export const createShortcut = catchAsyncError(async (req, res, next) => {
-  const { toNotebook, id, toNote } = req.body;
+  const { notebookId, noteId } = req.body;
+
+  if (!notebookId && !noteId) {
+    return next(
+      new HandleGlobalError("either NotebookId or NoteId must be provided", 404)
+    );
+  }
 
   // WORK: CREATE SHORTCUT TO NOTEBOOK
-  if (toNotebook === TRUE && id) {
-    await Notebook.findOneAndUpdate(
+  if (notebookId) {
+    const updateNotebook = await Notebook.findOneAndUpdate(
       {
-        _id: id,
+        _id: notebookId,
       },
       {
         shortcut: true,
+      },
+      {
+        new: true,
       }
     );
 
     res.status(200).json({
-      message: "Shortcut is Added",
+      message: "Shortcut is Added to notebook",
+      data: updateNotebook,
     });
+
     return;
   }
 
   // WORK: CREATE SHORTCUT TO NOTE
-  if (toNote === TRUE && id) {
-    await Note.findOneAndUpdate(
+  if (noteId) {
+    const updateNote = await Note.findOneAndUpdate(
       {
-        _id: id,
+        _id: noteId,
       },
       {
         shortcut: true,
+      },
+      {
+        new: true,
       }
     );
 
     res.status(200).json({
-      message: "Shortcut is added",
+      message: "Shortcut is added is Note",
+      data: updateNote,
     });
     return;
   }
@@ -101,40 +59,53 @@ export const createShortcut = catchAsyncError(async (req, res, next) => {
 
 // NOTE: REMOVED NOTES AND NOTEBOOKS FROM SHORTCUT
 export const updateShortcut = catchAsyncError(async (req, res, next) => {
-  const userId = req.userId;
+  const { notebookId, noteId } = req.body;
 
-  const { fromNotebook = false, id, fromNote = false } = req.body;
+  if (!notebookId && !noteId) {
+    return next(
+      new HandleGlobalError("either NotebookId or NoteId must be provided", 404)
+    );
+  }
 
-  // WORK: REMOVE NOTEBOOK FROM SHORTCUT
-  if (fromNotebook && id) {
-    await Notebook.findOneAndUpdate(
+  // WORK: REMOVED SHORTCUT TO NOTEBOOK
+  if (notebookId) {
+    const updateNotebook = await Notebook.findOneAndUpdate(
       {
-        _id: id,
+        _id: notebookId,
       },
       {
         shortcut: false,
+      },
+      {
+        new: true,
       }
     );
 
     res.status(200).json({
-      message: "Shortcut is Removed",
+      message: "Shortcut is Removed to notebook",
+      data: updateNotebook,
     });
+
     return;
   }
 
-  // WORK: REMOVE NOTE FROM SHORTCUT
-  if (fromNote && id) {
-    await Note.findOneAndUpdate(
+  // WORK: REMOVED SHORTCUT TO NOTE
+  if (noteId) {
+    const updateNote = await Note.findOneAndUpdate(
       {
-        _id: id,
+        _id: noteId,
       },
       {
         shortcut: false,
+      },
+      {
+        new: true,
       }
     );
 
     res.status(200).json({
-      message: "Shortcut is Removed",
+      message: "Shortcut is removed is Note",
+      data: updateNote,
     });
     return;
   }
