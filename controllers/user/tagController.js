@@ -1,10 +1,8 @@
 import catchAsyncError from "../../utils/catchAsyncError.js";
 import { Note } from "../../models/NoteModel.js";
 import { Tag } from "../../models/TagModel.js";
-import { changeUnderScoreId } from "../../utils/javaScript/basicJS.js";
 import HandleGlobalError from "../../utils/HandleGlobalError.js";
 
-const TRUE = "true";
 
 // NOTE: GET ALL TAGS
 export const getTags = catchAsyncError(async (req, res, next) => {
@@ -35,7 +33,7 @@ export const createTag = catchAsyncError(async (req, res, next) => {
     return next(new HandleGlobalError("Tag Name must be provided", 404));
 
   // WORK: TAG IS CREATED FROM NOTE AND ADDED TO NOTE AT THE SAME TIME
-  if (isAddedToNote === TRUE && noteId) {
+  if (isAddedToNote && noteId) {
     const newTag = await Tag.create({
       user,
       title: name,
@@ -86,6 +84,7 @@ export const updateTag = catchAsyncError(async (req, res, next) => {
       },
       {
         title: name,
+        updatedAt : Date.now()
       },
       {
         new: true,
@@ -109,6 +108,7 @@ export const updateTag = catchAsyncError(async (req, res, next) => {
         },
         {
           $pull: { noteList: noteId },
+          updatedAt : Date.now()
         }
       ),
       Note.updateMany(

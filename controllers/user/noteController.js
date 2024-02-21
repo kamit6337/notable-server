@@ -16,9 +16,6 @@ export const getNotes = catchAsyncError(async (req, res, next) => {
   })
     .lean()
     .select("-__v")
-    .sort({
-      updatedAt: -1,
-    });
 
   res.status(200).json({
     message: "Notes",
@@ -79,6 +76,7 @@ export const updateNote = catchAsyncError(async (req, res, next) => {
       },
       {
         ...obj,
+        updatedAt : Date.now()
       },
       {
         new: true,
@@ -98,6 +96,8 @@ export const updateNote = catchAsyncError(async (req, res, next) => {
       { _id: id },
       {
         $push: { tags: tagId },
+        updatedAt : Date.now()
+        
       },
       {
         new: true,
@@ -117,6 +117,8 @@ export const updateNote = catchAsyncError(async (req, res, next) => {
       { _id: id },
       {
         $pull: { tags: tagId },
+        updatedAt : Date.now()
+
       },
       {
         new: true,

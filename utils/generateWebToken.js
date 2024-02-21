@@ -15,7 +15,7 @@ const generateWebToken = (
   secret = environment.JWT_SECRET_KEY,
   expires = environment.JWT_EXPIRES_IN
 ) => {
-  const token = jwt.sign({ ...payload }, secret, {
+  const token = jwt.sign({ ...payload, expire: Date.now() + expires }, secret, {
     expiresIn: expires,
   });
 

@@ -1,11 +1,8 @@
 import catchAsyncError from "../../utils/catchAsyncError.js";
 import { Notebook } from "../../models/NotebookModel.js";
 import { Note } from "../../models/NoteModel.js";
-import { Tag } from "../../models/TagModel.js";
-import { changeUnderScoreId } from "../../utils/javaScript/basicJS.js";
 import HandleGlobalError from "../../utils/HandleGlobalError.js";
 
-const TRUE = "true";
 
 // NOTE: GET NOTEBOOK
 export const getNotebooks = catchAsyncError(async (req, res, next) => {
@@ -14,7 +11,6 @@ export const getNotebooks = catchAsyncError(async (req, res, next) => {
   const notebooks = await Notebook.find({ user })
     .select("-__v")
     .lean()
-    .sort({ updatedAt: -1 });
 
   res.status(200).json({
     message: "All Notebook",

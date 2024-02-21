@@ -2,7 +2,7 @@ const Req = (req) => {
   const { cookie } = req.headers;
 
   if (!cookie) {
-    throw new Error("Cookie is not present");
+    throw new Error("Your do not have active session. Please Login Again.");
   }
 
   let cookies = {};
