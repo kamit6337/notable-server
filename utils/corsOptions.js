@@ -1,5 +1,5 @@
 export const corsOptions = {
-  origin: ["http://localhost:5173"],
+  origin: ["https://notable-b095.onrender.com"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true,
 };
