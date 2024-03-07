@@ -1,5 +1,5 @@
 export const corsOptions = {
-  origin: ["https://notable-b095.onrender.com"],
+  origin: ["https://notable-client.onrender.com"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true,
 };
