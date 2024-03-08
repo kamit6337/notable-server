@@ -21,6 +21,7 @@ export const createShortcut = catchAsyncError(async (req, res, next) => {
       },
       {
         shortcut: true,
+        updatedAt: Date.now(),
       },
       {
         new: true,
@@ -43,6 +44,7 @@ export const createShortcut = catchAsyncError(async (req, res, next) => {
       },
       {
         shortcut: true,
+        updatedAt: Date.now(),
       },
       {
         new: true,
@@ -75,6 +77,7 @@ export const updateShortcut = catchAsyncError(async (req, res, next) => {
       },
       {
         shortcut: false,
+        updatedAt: Date.now(),
       },
       {
         new: true,
@@ -97,6 +100,7 @@ export const updateShortcut = catchAsyncError(async (req, res, next) => {
       },
       {
         shortcut: false,
+        updatedAt: Date.now(),
       },
       {
         new: true,
