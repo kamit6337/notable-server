@@ -36,8 +36,8 @@ const signup = catchAsyncError(async (req, res, next) => {
 
   res.cookie("token", token, {
     expires: new Date(Date.now() + environment.JWT_EXPIRES_IN),
-    httpOnly: true,
     secure: true,
+    domain: environment.CLIENT_URL,
   });
 
   res.status(200).json({
