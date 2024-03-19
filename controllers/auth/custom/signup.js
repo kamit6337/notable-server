@@ -31,6 +31,8 @@ const signup = catchAsyncError(async (req, res, next) => {
     role: createUser.role,
   });
 
+  console.log("token generated", token);
+
   res.cookie("token", token, {
     expires: new Date(Date.now() + environment.JWT_EXPIRES_IN),
     httpOnly: true,

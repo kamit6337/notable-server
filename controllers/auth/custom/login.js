@@ -71,6 +71,8 @@ const login = catchAsyncError(async (req, res, next) => {
     role: findUser.role,
   });
 
+  console.log("token generated", token);
+
   res.cookie("token", token, {
     expires: new Date(Date.now() + environment.JWT_EXPIRES_IN),
     httpOnly: true,
