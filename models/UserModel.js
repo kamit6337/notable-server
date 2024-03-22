@@ -42,18 +42,6 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
-    loginCount: {
-      type: Number,
-      default: 1,
-    },
-    lastLogin: {
-      type: Date,
-      default: Date.now(),
-    },
-    doubleVerify: {
-      type: Boolean,
-      default: false,
-    },
   },
   {
     timestamps: true,

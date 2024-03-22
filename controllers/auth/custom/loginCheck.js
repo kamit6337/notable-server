@@ -19,14 +19,12 @@ const loginCheck = catchAsyncError(async (req, res, next) => {
 
   const decoded = verifyWebToken(token);
 
-  const { inMilliSec: currentMilli } = getCurrentTime();
+  const currentMilli = getCurrentTime();
 
-  const expireTokenMin = 15 * 60 * 1000; //15 minutes
+  const expireTokenMin = 30 * 60 * 1000; //30 minutes
   const diffeInMilli = decoded.expire - currentMilli;
 
-  const isLessThan15 = diffeInMilli <= expireTokenMin;
-
-  if (isLessThan15) {
+  if (diffeInMilli < expireTokenMin) {
     return next(
       new HandleGlobalError(
         "Your Session has expired. Please Login Again.",
@@ -43,6 +41,13 @@ const loginCheck = catchAsyncError(async (req, res, next) => {
     return next(
       new HandleGlobalError("Unauthorised Access. Please Login Again.", 400)
     );
+  }
+
+  // MARK: CHECK UPDATEDAT WHEN PASSWORD UPDATE, SO LOGIN AGAIN IF PASSWORD RESET
+  const updatedAtInMilli = new Date(findUser.updatedAt).getTime();
+  
+  if (decoded.iat * 1000 <= updatedAtInMilli) {
+    return next(new HandleGlobalError("Please login again...", 403));
   }
 
   res.status(200).json({

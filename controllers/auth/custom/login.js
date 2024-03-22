@@ -21,49 +21,12 @@ const login = catchAsyncError(async (req, res, next) => {
     return next(new HandleGlobalError("Email or Password is incorrect", 404));
   }
 
-  //   MARK: CHECK FORGOT PASSWORD EMAIL, NEW PASSWORD
-  const userFromSession = req.session?.confirmOTP
-    ?.filter((obj) => obj.email === email)
-    .at(-1);
+  //   MARK: IF USER PASSWORD DOES NOT MATCH WITH HASH PASSWORD, THROW ERROR
+  const isPasswordValid = findUser.checkPassword(password); // Boolean
 
-  if (userFromSession) {
-    const current = Date.now();
-
-    if (current > userFromSession.date) {
-      req.session.confirmOTP = req.session.confirmOTP.filter(
-        (obj) => obj.email !== email
-      );
-      return next(new HandleGlobalError("OTP confirm time has passed", 404));
-    }
-
-    const checkOTP = password === userFromSession.otp;
-
-    if (!checkOTP) {
-      return next(new HandleGlobalError("Email or Password is incorrect", 404));
-    }
-
-    req.session.confirmOTP = req.session.confirmOTP.filter(
-      (obj) => obj.email !== email
-    );
-  } else {
-    //   MARK: IF USER PASSWORD DOES NOT MATCH WITH HASH PASSWORD, THROW ERROR
-    const isPasswordValid = findUser.checkPassword(password); // Boolean
-
-    if (!isPasswordValid) {
-      return next(new HandleGlobalError("Email or Password is incorrect", 404));
-    }
+  if (!isPasswordValid) {
+    return next(new HandleGlobalError("Email or Password is incorrect", 404));
   }
-
-  //   MARK: UPDATE THE USER PROFILE AFTER SUCCESSFUL LOGIN
-  await User.findOneAndUpdate(
-    {
-      _id: findUser._id,
-    },
-    {
-      $inc: { loginCount: 1 },
-      $currentDate: { lastLoginAt: true },
-    }
-  );
 
   //   MARK: USER EMAIL AND PASSWORD IS CONFIRMED, SEND TOKEN AND MAKE LOGIN
   const token = generateWebToken({
@@ -71,13 +34,9 @@ const login = catchAsyncError(async (req, res, next) => {
     role: findUser.role,
   });
 
-  console.log("token generated", token);
-  console.log("environment.JWT_EXPIRES_IN", environment.JWT_EXPIRES_IN);
-
   res.cookie("token", token, {
     expires: new Date(Date.now() + environment.JWT_EXPIRES_IN),
-    secure: true,
-    domain: environment.CLIENT_URL,
+    httpOnly: true,
   });
 
   res.status(200).json({

@@ -8,25 +8,6 @@ import axios from "axios";
 import path from "path";
 import fs from "fs";
 
-// NOTE: UPDATE USER
-export const updateUser = catchAsyncError(async (req, res) => {
-  if (req.user) {
-    const { id } = req.user;
-
-    await User.findOneAndUpdate(
-      {
-        OAuthId: id,
-      },
-      {
-        $inc: { loginCount: 1 },
-        lastLogin: Date.now(),
-      }
-    );
-  }
-
-  res.redirect(environment.CLIENT_CHECKLOGIN_URL);
-});
-
 // NOTE: LOGIN SUCCESS
 export const loginSuccess = catchAsyncError(async (req, res, next) => {
   if (!req.user)
@@ -85,6 +66,8 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
     res.status(200).json({
       message: "OAuth Login Successfully",
     });
+
+    res.redirect(environment.CLIENT_URL);
     return;
   }
 
@@ -102,21 +85,14 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     message: "OAuth Login Successfully",
   });
+
+  res.redirect(environment.CLIENT_URL);
   return;
 });
 
 // NOTE: LOGOUT
 export const logout = (req, res) => {
   const cookies = Req(req);
-
-  // const { token } = req.cookies;
-  // const cookies = req.cookies;
-  // req.logout((err) => {
-  //   if (err) {
-  //     return res.status(500).json({
-  //       message: "Error during logout",
-  //     });
-  //   }
 
   Object.keys(cookies).forEach((cookie) => {
     res.clearCookie(cookie);

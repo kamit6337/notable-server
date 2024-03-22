@@ -16,4 +16,5 @@ export const environment = {
   MY_GMAIL_PASSWORD: process.env.MY_GMAIL_PASSWORD,
   MY_GMAIL_ID: process.env.MY_GMAIL_ID,
   STRING_CHARACTERS: process.env.STRING_CHARACTERS,
+  SALT_ROUND: Number(process.env.SALT_ROUND),
 };

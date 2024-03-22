@@ -11,9 +11,9 @@ const protectRoute = catchAsyncError(async (req, res, next) => {
     return next(new HandleGlobalError("UnAuthorized Access", 403, "Failed"));
   }
 
-  const decodedId = verifyWebToken(token);
+  const decoded = verifyWebToken(token);
 
-  const findUser = await User.findById(decodedId.id);
+  const findUser = await User.findById(decoded.id);
 
   if (!findUser) {
     return next(

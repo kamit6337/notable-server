@@ -9,7 +9,7 @@ const getCurrentTime = () => {
   const offsetIST = 5.5 * 60 * 60 * 1000; // Offset in milliseconds
   const currentTimeIST = new Date(dateUTC.getTime() + offsetIST);
 
-  return { inMilliSec: dateUTC.getTime(), inIST: currentTimeIST };
+  return dateUTC.getTime();
 };
 
 export default getCurrentTime;
