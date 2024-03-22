@@ -1,11 +1,7 @@
 import { environment } from "./environment.js";
 
 export const corsOptions = {
-  origin: [
-    "https://www.notable-client.onrender.com",
-    "notable-client.onrender.com",
-    "http://notable-client.onrender.com",
-  ],
+  origin: ["https://www.notable-client.onrender.com"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true,
 };
