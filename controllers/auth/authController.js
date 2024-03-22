@@ -63,10 +63,6 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
       httpOnly: true,
     });
 
-    res.status(200).json({
-      message: "OAuth Login Successfully",
-    });
-
     res.redirect(environment.CLIENT_URL);
     return;
   }
@@ -82,11 +78,8 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
     httpOnly: true,
   });
 
-  res.status(200).json({
-    message: "OAuth Login Successfully",
-  });
-
   res.redirect(environment.CLIENT_URL);
+
   return;
 });
 
