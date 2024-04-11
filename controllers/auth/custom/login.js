@@ -40,9 +40,11 @@ const login = catchAsyncError(async (req, res, next) => {
 
   console.log("token", token);
 
+  const tokenExpire = Date.now() + environment.JWT_EXPIRES_IN;
+  console.log("tokenExpire", tokenExpire);
+
   res.cookie("token", token, {
-    expires: new Date(Date.now() + environment.JWT_EXPIRES_IN),
-    httpOnly: true,
+    expires: new Date(tokenExpire),
   });
 
   console.log("token is send as cookie");
