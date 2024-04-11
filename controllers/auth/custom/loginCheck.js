@@ -8,15 +8,6 @@ import getCurrentTime from "../../../utils/javaScript/getCurrentTime.js";
 const loginCheck = catchAsyncError(async (req, res, next) => {
   const { token } = Req(req);
 
-  if (!token) {
-    return next(
-      new HandleGlobalError(
-        "Your do not have active session. Please Login Again.",
-        400
-      )
-    );
-  }
-
   const decoded = verifyWebToken(token);
 
   const currentMilli = getCurrentTime();
@@ -45,7 +36,7 @@ const loginCheck = catchAsyncError(async (req, res, next) => {
 
   // MARK: CHECK UPDATEDAT WHEN PASSWORD UPDATE, SO LOGIN AGAIN IF PASSWORD RESET
   const updatedAtInMilli = new Date(findUser.updatedAt).getTime();
-  
+
   if (decoded.iat * 1000 <= updatedAtInMilli) {
     return next(new HandleGlobalError("Please login again...", 403));
   }
