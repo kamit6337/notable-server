@@ -42,6 +42,7 @@ const login = catchAsyncError(async (req, res, next) => {
 
   const tokenExpire = Date.now() + environment.JWT_EXPIRES_IN;
   console.log("tokenExpire", tokenExpire);
+  console.log("Date.now()", Date.now());
 
   res.cookie("token", token, {
     expires: new Date(tokenExpire),
