@@ -69,8 +69,11 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
       expires: new Date(Date.now() + environment.JWT_EXPIRES_IN),
       httpOnly: true,
     });
+    console.log("token is send as cookie");
 
     res.redirect(environment.CLIENT_URL);
+    console.log("redirect back to client");
+
     return;
   }
 
@@ -85,8 +88,11 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
     expires: new Date(Date.now() + environment.JWT_EXPIRES_IN),
     httpOnly: true,
   });
+  console.log("token is send as cookie");
 
   res.redirect(environment.CLIENT_URL);
+
+  console.log("redirect back to client");
 
   return;
 });

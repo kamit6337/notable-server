@@ -8,7 +8,7 @@ import getCurrentTime from "../../../utils/javaScript/getCurrentTime.js";
 const loginCheck = catchAsyncError(async (req, res, next) => {
   const { token } = Req(req);
 
-  console.log("token", token);
+  console.log("token from login check", token);
 
   const decoded = verifyWebToken(token);
   console.log("decoded", decoded);

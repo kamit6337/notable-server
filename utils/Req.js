@@ -6,7 +6,6 @@ const Req = (req) => {
   }
 
   let cookies = {};
-  //   const cookie = "_at=ksdjfdklcasdkd=sa; _cta=asdnklfdasfdjncjdkscds";
 
   const cookieArray = cookie.split("; ");
 

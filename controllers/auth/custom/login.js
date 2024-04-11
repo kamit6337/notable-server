@@ -45,9 +45,12 @@ const login = catchAsyncError(async (req, res, next) => {
     httpOnly: true,
   });
 
+  console.log("token is send as cookie");
+
   res.status(200).json({
     message: "Login Successfully",
   });
+  console.log("redirect back to client");
 });
 
 export default login;
