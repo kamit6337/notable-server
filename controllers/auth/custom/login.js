@@ -16,6 +16,8 @@ const login = catchAsyncError(async (req, res, next) => {
 
   const findUser = await User.findOne({ email });
 
+  console.log("finduser", findUser);
+
   //   MARK: IF USER DOES NOT EXIST WITH THAT PASSWORD THROW ERROR
   if (!findUser) {
     return next(new HandleGlobalError("Email or Password is incorrect", 404));
@@ -23,6 +25,8 @@ const login = catchAsyncError(async (req, res, next) => {
 
   //   MARK: IF USER PASSWORD DOES NOT MATCH WITH HASH PASSWORD, THROW ERROR
   const isPasswordValid = findUser.checkPassword(password); // Boolean
+
+  console.log("isPasswordValid", isPasswordValid);
 
   if (!isPasswordValid) {
     return next(new HandleGlobalError("Email or Password is incorrect", 404));
@@ -33,6 +37,8 @@ const login = catchAsyncError(async (req, res, next) => {
     id: findUser._id,
     role: findUser.role,
   });
+
+  console.log("token", token);
 
   res.cookie("token", token, {
     expires: new Date(Date.now() + environment.JWT_EXPIRES_IN),

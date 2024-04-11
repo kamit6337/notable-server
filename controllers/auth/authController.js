@@ -21,7 +21,11 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
     _json: { name, email, picture },
   } = req.user;
 
+  console.log("req.user", req.user);
+
   const findUser = await User.findOne({ OAuthId: id });
+
+  console.log("findUser", findUser);
 
   // MARK: IF NOT FIND USER
   if (!findUser) {
@@ -53,10 +57,13 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
       return next(new HandleGlobalError("Issue in Signup", 404));
     }
 
+    console.log("createUser", createUser);
+
     const token = generateWebToken({
       id: createUser._id,
       role: createUser.role,
     });
+    console.log("token", token);
 
     res.cookie("token", token, {
       expires: new Date(Date.now() + environment.JWT_EXPIRES_IN),
@@ -72,6 +79,7 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
     id: findUser._id,
     role: findUser.role,
   });
+  console.log("token", token);
 
   res.cookie("token", token, {
     expires: new Date(Date.now() + environment.JWT_EXPIRES_IN),
