@@ -8,7 +8,10 @@ import getCurrentTime from "../../../utils/javaScript/getCurrentTime.js";
 const loginCheck = catchAsyncError(async (req, res, next) => {
   const { token } = Req(req);
 
+  console.log("token", token);
+
   const decoded = verifyWebToken(token);
+  console.log("decoded", decoded);
 
   const currentMilli = getCurrentTime();
 
@@ -27,6 +30,8 @@ const loginCheck = catchAsyncError(async (req, res, next) => {
   const findUser = await User.findOne({
     _id: decoded.id,
   });
+
+  console.log("findUser", findUser);
 
   if (!findUser) {
     return next(
