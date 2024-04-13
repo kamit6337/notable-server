@@ -40,13 +40,10 @@ const login = catchAsyncError(async (req, res, next) => {
 
   console.log("token", token);
 
-  const tokenExpire = Date.now() + environment.JWT_EXPIRES_IN;
-  console.log("tokenExpire", tokenExpire);
-  console.log("Date.now()", Date.now());
-
   res.cookie("token", token, {
-    expires: new Date(tokenExpire),
+    maxAge: environment.JWT_EXPIRES_IN,
     httpOnly: true,
+    path: "/", // Allow cookie access from all paths
     domain: ".notable-client.onrender.com",
     secure: true,
   });

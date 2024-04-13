@@ -70,11 +70,13 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
     console.log("Date.now()", Date.now());
 
     res.cookie("token", token, {
-      expires: new Date(tokenExpire),
+      maxAge: environment.JWT_EXPIRES_IN,
       httpOnly: true,
+      path: "/", // Allow cookie access from all paths
       domain: ".notable-client.onrender.com",
       secure: true,
     });
+
     console.log("token is send as cookie");
 
     res.redirect(environment.CLIENT_URL);
@@ -95,11 +97,13 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
   console.log("Date.now()", Date.now());
 
   res.cookie("token", token, {
-    expires: new Date(tokenExpire),
+    maxAge: environment.JWT_EXPIRES_IN,
     httpOnly: true,
+    path: "/", // Allow cookie access from all paths
     domain: ".notable-client.onrender.com",
     secure: true,
   });
+
   console.log("token is send as cookie");
 
   res.redirect(environment.CLIENT_URL);

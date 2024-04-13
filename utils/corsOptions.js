@@ -1,8 +1,4 @@
-const allowedUrlList = [
-  "https://notable-client.onrender.com",
-  "https://www.notable-client.onrender.com",
-  "notable-client.onrender.com",
-];
+const allowedUrlList = ["https://notable-client.onrender.com"];
 
 export const corsOptions = {
   origin: function (origin, callback) {
