@@ -72,7 +72,7 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
     res.cookie("token", token, {
       expires: new Date(tokenExpire),
       httpOnly: true,
-      domain: environment.CLIENT_URL,
+      domain: ".notable-client.onrender.com",
     });
     console.log("token is send as cookie");
 
@@ -96,7 +96,7 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
   res.cookie("token", token, {
     expires: new Date(tokenExpire),
     httpOnly: true,
-    domain: environment.CLIENT_URL,
+    domain: ".notable-client.onrender.com",
   });
   console.log("token is send as cookie");
 
