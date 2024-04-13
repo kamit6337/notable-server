@@ -72,8 +72,6 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
     res.cookie("token", token, {
       maxAge: environment.JWT_EXPIRES_IN,
       httpOnly: true,
-      path: "/", // Allow cookie access from all paths
-      domain: ".notable-client.onrender.com",
       secure: true,
     });
 
@@ -99,8 +97,6 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
   res.cookie("token", token, {
     maxAge: environment.JWT_EXPIRES_IN,
     httpOnly: true,
-    path: "/", // Allow cookie access from all paths
-    domain: ".notable-client.onrender.com",
     secure: true,
   });
 
