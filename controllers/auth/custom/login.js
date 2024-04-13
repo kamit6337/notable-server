@@ -48,6 +48,7 @@ const login = catchAsyncError(async (req, res, next) => {
     expires: new Date(tokenExpire),
     httpOnly: true,
     domain: ".notable-client.onrender.com",
+    secure: true,
   });
 
   console.log("token is send as cookie");
