@@ -4,6 +4,8 @@ import generateWebToken from "../../../utils/generateWebToken.js";
 import { environment } from "../../../utils/environment.js";
 import { User } from "../../../models/UserModel.js";
 
+const PRODUCTION = "production";
+
 const login = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -16,8 +18,6 @@ const login = catchAsyncError(async (req, res, next) => {
 
   const findUser = await User.findOne({ email });
 
-  console.log("finduser", findUser);
-
   //   MARK: IF USER DOES NOT EXIST WITH THAT PASSWORD THROW ERROR
   if (!findUser) {
     return next(new HandleGlobalError("Email or Password is incorrect", 404));
@@ -25,8 +25,6 @@ const login = catchAsyncError(async (req, res, next) => {
 
   //   MARK: IF USER PASSWORD DOES NOT MATCH WITH HASH PASSWORD, THROW ERROR
   const isPasswordValid = findUser.checkPassword(password); // Boolean
-
-  console.log("isPasswordValid", isPasswordValid);
 
   if (!isPasswordValid) {
     return next(new HandleGlobalError("Email or Password is incorrect", 404));
@@ -38,20 +36,21 @@ const login = catchAsyncError(async (req, res, next) => {
     role: findUser.role,
   });
 
-  console.log("token", token);
-
-  res.cookie("token", token, {
+  const cookieOptions = {
     maxAge: environment.JWT_EXPIRES_IN,
     httpOnly: true,
-    secure: true,
-  });
+  };
 
-  console.log("token is send as cookie");
+  if (environment.NODE_ENV === PRODUCTION) {
+    cookieOptions.secure = true;
+    cookieOptions.sameSite = "None";
+  }
+
+  res.cookie("token", token, cookieOptions);
 
   res.status(200).json({
     message: "Login Successfully",
   });
-  console.log("redirect back to client");
 });
 
 export default login;

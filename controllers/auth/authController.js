@@ -8,6 +8,8 @@ import axios from "axios";
 import path from "path";
 import fs from "fs";
 
+const PRODUCTION = "production";
+
 // NOTE: LOGIN SUCCESS
 export const loginSuccess = catchAsyncError(async (req, res, next) => {
   if (!req.user)
@@ -21,11 +23,7 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
     _json: { name, email, picture },
   } = req.user;
 
-  console.log("req.user", req.user);
-
   const findUser = await User.findOne({ OAuthId: id });
-
-  console.log("findUser", findUser);
 
   // MARK: IF NOT FIND USER
   if (!findUser) {
@@ -57,28 +55,24 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
       return next(new HandleGlobalError("Issue in Signup", 404));
     }
 
-    console.log("createUser", createUser);
-
     const token = generateWebToken({
       id: createUser._id,
       role: createUser.role,
     });
-    console.log("token", token);
 
-    const tokenExpire = Date.now() + environment.JWT_EXPIRES_IN;
-    console.log("tokenExpire", tokenExpire);
-    console.log("Date.now()", Date.now());
-
-    res.cookie("token", token, {
+    const cookieOptions = {
       maxAge: environment.JWT_EXPIRES_IN,
       httpOnly: true,
-      secure: true,
-    });
+    };
 
-    console.log("token is send as cookie");
+    if (environment.NODE_ENV === PRODUCTION) {
+      cookieOptions.secure = true;
+      cookieOptions.sameSite = "None";
+    }
+
+    res.cookie("token", token, cookieOptions);
 
     res.redirect(environment.CLIENT_URL);
-    console.log("redirect back to client");
 
     return;
   }
@@ -88,23 +82,20 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
     id: findUser._id,
     role: findUser.role,
   });
-  console.log("token", token);
 
-  const tokenExpire = Date.now() + environment.JWT_EXPIRES_IN;
-  console.log("tokenExpire", tokenExpire);
-  console.log("Date.now()", Date.now());
-
-  res.cookie("token", token, {
+  const cookieOptions = {
     maxAge: environment.JWT_EXPIRES_IN,
     httpOnly: true,
-    secure: true,
-  });
+  };
 
-  console.log("token is send as cookie");
+  if (environment.NODE_ENV === PRODUCTION) {
+    cookieOptions.secure = true;
+    cookieOptions.sameSite = "None";
+  }
+
+  res.cookie("token", token, cookieOptions);
 
   res.redirect(environment.CLIENT_URL);
-
-  console.log("redirect back to client");
 
   return;
 });
