@@ -14,19 +14,19 @@ const globalErrorHandler = (err, req, res, next) => {
   if (err.name === "TypeError") {
     err.statusCode = 404;
     err.status = "Server Error";
-    err.message = "Server is download. Please login again after sometime!";
+    err.message = "Server is down. Please login again after sometime!";
   }
 
   if (err.name === "TokenError") {
     err.statusCode = 400;
     err.status = "unAuthorized";
-    err.message = "Sorry, your OAuth token has expired";
+    err.message = "Sorry, your session has expired";
   }
 
   if (err.name === "TokenExpiredError") {
     err.statusCode = 401;
     err.status = "unAuthorized";
-    err.message = "Sorry, your token has expired";
+    err.message = "Sorry, your session has expired";
   }
 
   if (err.name === "ValidationError") {
@@ -53,8 +53,7 @@ const globalErrorHandler = (err, req, res, next) => {
   if (err.name === "JsonWebTokenError") {
     err.statusCode = 404;
     err.status = "Forbidden";
-    err.message =
-      "Please check your token carefully. This token is unAuthorized.";
+    err.message = "Please login...";
   }
 
   if (err.message.includes("ETIMEDOUT")) {
@@ -70,7 +69,7 @@ const globalErrorHandler = (err, req, res, next) => {
   }
 
   if (err.name === "InternalOAuthError") {
-    res.redirect(environment.CLIENT_CHECKLOGIN_URL);
+    res.redirect(environment.CLIENT_URL);
     return;
   }
 

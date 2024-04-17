@@ -31,11 +31,17 @@ const signup = catchAsyncError(async (req, res, next) => {
     role: createUser.role,
   });
 
-  res.cookie("token", token, {
-    expires: new Date(Date.now() + environment.JWT_EXPIRES_IN),
+  const cookieOptions = {
+    maxAge: environment.JWT_EXPIRES_IN,
     httpOnly: true,
-    domain: environment.CLIENT_URL,
-  });
+  };
+
+  if (environment.NODE_ENV === PRODUCTION) {
+    cookieOptions.secure = true;
+    cookieOptions.sameSite = "None";
+  }
+
+  res.cookie("token", token, cookieOptions);
 
   res.status(200).json({
     message: "SignUp Successfully",

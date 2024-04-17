@@ -5,10 +5,6 @@ const getCurrentTime = () => {
   // Convert milliseconds to a Date object
   const dateUTC = new Date(currentTimeUTC);
 
-  // Adjust the time zone offset for IST (UTC +5 hours and 30 minutes)
-  const offsetIST = 5.5 * 60 * 60 * 1000; // Offset in milliseconds
-  const currentTimeIST = new Date(dateUTC.getTime() + offsetIST);
-
   return dateUTC.getTime();
 };
 
