@@ -24,7 +24,9 @@ const signup = catchAsyncError(async (req, res, next) => {
 
   if (findUser) {
     return next(
-      new HandleGlobalError("You have already signed up. Please login")
+      new HandleGlobalError(
+        "You have already signed up with this Email ID. Please login or signup with different Email ID"
+      )
     );
   }
 
