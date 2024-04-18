@@ -7,6 +7,8 @@ import generateWebToken from "../../../utils/generateWebToken.js";
 // MARK: PLACED A DUMMY URL IN CASE USER DOES NOT PROVIDE PHOTO
 const userPic = `images/userProfile/dummy_profile.png`;
 
+const PRODUCTION = "production";
+
 const signup = catchAsyncError(async (req, res, next) => {
   const { name, email, password } = req.body;
 
