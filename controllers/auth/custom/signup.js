@@ -18,7 +18,7 @@ const signup = catchAsyncError(async (req, res, next) => {
 
   // MARK: CHECK USER IS ALREADY PRESENT OR NOT
 
-  const findUser = await User.find({
+  const findUser = await User.findOne({
     email,
   });
 
