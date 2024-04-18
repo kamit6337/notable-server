@@ -16,6 +16,18 @@ const signup = catchAsyncError(async (req, res, next) => {
     return next(new HandleGlobalError("Not provided all field", 404));
   }
 
+  // MARK: CHECK USER IS ALREADY PRESENT OR NOT
+
+  const findUser = await User.find({
+    email,
+  });
+
+  if (findUser) {
+    return next(
+      new HandleGlobalError("You have already signed up. Please login")
+    );
+  }
+
   // MARK: CREATE USER
   const createUser = await User.create({
     name,
