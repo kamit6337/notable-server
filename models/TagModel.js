@@ -10,7 +10,6 @@ const tagSchema = new mongoose.Schema(
     },
     title: {
       type: String,
-      unique: [true, "Tag Title should be unique"],
       required: [true, "Please provide a Tag Title"],
     },
   },
