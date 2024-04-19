@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { environment } from "../utils/environment.js";
+import { User } from "../models/UserModel.js";
 
 // Connect to MongoDB
 mongoose.connect(environment.mongoDB_url, {});
@@ -15,11 +16,20 @@ mongoose.connection.on("connected", async () => {
 
   try {
     // Drop the unique index on the 'title' field
-    await mongoose.connection.collection("tags").dropIndex({ title: 1 });
+    const updateAllUser = await User.updateMany(
+      {},
+      {
+        $unset: {
+          loginCount: "",
+          lastLogin: "",
+          doubleVerify: "",
+        },
+      }
+    );
 
-    console.log("Unique constraint removed successfully.");
+    console.log("updateAllUser", updateAllUser);
   } catch (error) {
-    console.error("Error removing unique constraint:", error);
+    console.error("Error occur in update:", error);
   } finally {
     // Close the MongoDB connection
     mongoose.disconnect();
