@@ -5,15 +5,14 @@ import { environment } from "../../../utils/environment.js";
 import HandleGlobalError from "../../../utils/HandleGlobalError.js";
 
 const updateUserProfile = catchAsyncError(async (req, res, next) => {
-  const { id, name, email, password } = req.body;
+  const { id, name, password } = req.body;
 
-  if (!id || !name || !email) {
+  if (!id || !name) {
     return next(new HandleGlobalError("Not provided all field", 404));
   }
 
   const obj = {
     name,
-    email,
   };
 
   if (password) {

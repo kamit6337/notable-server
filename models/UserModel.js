@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       default: null,
+      select: false,
     },
     photo: {
       type: String,
@@ -32,10 +33,12 @@ const userSchema = new mongoose.Schema(
     OAuthId: {
       type: String,
       default: null,
+      select: false,
     },
     OAuthProvider: {
       type: String,
       default: null,
+      select: false,
     },
     role: {
       type: String,

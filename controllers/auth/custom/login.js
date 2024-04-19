@@ -16,7 +16,7 @@ const login = catchAsyncError(async (req, res, next) => {
     );
   }
 
-  const findUser = await User.findOne({ email });
+  const findUser = await User.findOne({ email }).select("+password");
 
   //   MARK: IF USER DOES NOT EXIST WITH THAT PASSWORD THROW ERROR
   if (!findUser) {
