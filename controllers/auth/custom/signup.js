@@ -4,9 +4,6 @@ import catchAsyncError from "../../../utils/catchAsyncError.js";
 import { environment } from "../../../utils/environment.js";
 import generateWebToken from "../../../utils/generateWebToken.js";
 
-// MARK: PLACED A DUMMY URL IN CASE USER DOES NOT PROVIDE PHOTO
-const userPic = `images/userProfile/dummy_profile.png`;
-
 const PRODUCTION = "production";
 
 const signup = catchAsyncError(async (req, res, next) => {
@@ -30,12 +27,14 @@ const signup = catchAsyncError(async (req, res, next) => {
     );
   }
 
+  const profilePicUrl = `https://ui-avatars.com/api/?background=random&name=${name}&size=128&bold=true`;
+
   // MARK: CREATE USER
   const createUser = await User.create({
     name,
     email,
     password,
-    photo: userPic,
+    photo: profilePicUrl,
   });
 
   if (!createUser) {

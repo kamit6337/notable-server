@@ -4,9 +4,6 @@ import catchAsyncError from "../../utils/catchAsyncError.js";
 import generateWebToken from "../../utils/generateWebToken.js";
 import { User } from "../../models/UserModel.js";
 import Req from "../../utils/Req.js";
-import axios from "axios";
-import path from "path";
-import fs from "fs";
 
 const PRODUCTION = "production";
 
@@ -27,26 +24,11 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
 
   // MARK: IF NOT FIND USER
   if (!findUser) {
-    // images folder inside public already present
-    const publicFolderPath = path.join("public", "images", "userProfile");
-    const fileName = `image_${Date.now()}.jpeg`;
-    const saveFilePath = `images/userProfile/${fileName}`;
-    const filePath = path.join(publicFolderPath, fileName);
-
-    // Create the directory if it doesn't exist
-    if (!fs.existsSync(publicFolderPath)) {
-      fs.mkdirSync(publicFolderPath, { recursive: true });
-    }
-
-    const response = await axios.get(picture, { responseType: "arraybuffer" });
-
-    await fs.promises.writeFile(filePath, response.data);
-
     // MARK: CREATE USER
     const createUser = await User.create({
       name,
       email,
-      photo: saveFilePath,
+      photo: picture,
       OAuthId: id,
       OAuthProvider: provider,
     });
@@ -71,13 +53,27 @@ export const loginSuccess = catchAsyncError(async (req, res, next) => {
     }
 
     res.cookie("token", token, cookieOptions);
-
     res.redirect(environment.CLIENT_URL);
-
     return;
   }
 
-  // MARK: IF FIND USER
+  // MARK: IF FIND USER IS PRESENT
+
+  // MARK: CHECK WHETHER PHOTO IS UPDATED OR NOT
+  const checkPath = "images/userProfile/";
+
+  if (findUser.photo.startsWith(checkPath)) {
+    await User.findOneAndUpdate(
+      {
+        _id: String(findUser._id),
+      },
+      {
+        photo: picture,
+      }
+    );
+  }
+
+  // MARK: CREATE TOEKN AND SEND IT
   const token = generateWebToken({
     id: findUser._id,
     role: findUser.role,

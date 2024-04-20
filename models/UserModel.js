@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema(
     photo: {
       type: String,
       required: [true, "Please provide pic"],
+      default: null,
     },
     OAuthId: {
       type: String,
