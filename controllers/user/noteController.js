@@ -15,7 +15,7 @@ export const getNotes = catchAsyncError(async (req, res, next) => {
     user,
   })
     .lean()
-    .select("-__v")
+    .select("-__v");
 
   res.status(200).json({
     message: "Notes",
@@ -76,7 +76,7 @@ export const updateNote = catchAsyncError(async (req, res, next) => {
       },
       {
         ...obj,
-        updatedAt : Date.now()
+        updatedAt: Date.now(),
       },
       {
         new: true,
@@ -96,8 +96,7 @@ export const updateNote = catchAsyncError(async (req, res, next) => {
       { _id: id },
       {
         $push: { tags: tagId },
-        updatedAt : Date.now()
-        
+        updatedAt: Date.now(),
       },
       {
         new: true,
@@ -117,8 +116,7 @@ export const updateNote = catchAsyncError(async (req, res, next) => {
       { _id: id },
       {
         $pull: { tags: tagId },
-        updatedAt : Date.now()
-
+        updatedAt: Date.now(),
       },
       {
         new: true,
