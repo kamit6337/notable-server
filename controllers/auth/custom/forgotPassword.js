@@ -3,7 +3,6 @@ import nodemailer from "nodemailer";
 import ejs from "ejs";
 import path from "path";
 import { environment } from "../../../utils/environment.js";
-import generateString from "../../../utils/javaScript/generateString.js";
 import HandleGlobalError from "../../../utils/HandleGlobalError.js";
 import { User } from "../../../models/UserModel.js";
 import generateWebToken from "../../../utils/generateWebToken.js";

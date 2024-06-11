@@ -19,7 +19,7 @@ const noteSchema = new mongoose.Schema(
     },
     body: {
       type: mongoose.Schema.Types.Mixed,
-      default: null,
+      default: "",
     },
     tags: [
       {
