@@ -4,7 +4,7 @@ dotenv.config();
 export const environment = {
   PORT: process.env.PORT,
   NODE_ENV: process.env.NODE_ENV,
-  mongoDB_url: process.env.mongoDB_URL,
+  MONGO_DB_URI: process.env.MONGO_DB_URI,
   CLIENT_URL: process.env.CLIENT_URL,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_OAUTH_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_OAUTH_CLIENT_SECRET,

@@ -1,3 +1,4 @@
+import MongoStore from "connect-mongo";
 import { environment } from "./environment.js";
 
 const expressSessionOptions = {
@@ -6,6 +7,10 @@ const expressSessionOptions = {
   resave: false,
   saveUninitialized: false,
   name: "OAuth-session",
+  store: MongoStore.create({
+    mongoUrl: environment.MONGO_DB_URI,
+    ttl: 14 * 24 * 60 * 60, // 14 days expiration
+  }),
 };
 
 export default expressSessionOptions;

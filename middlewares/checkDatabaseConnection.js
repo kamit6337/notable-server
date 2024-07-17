@@ -1,4 +1,4 @@
-import { isDatabaseConnected } from "../server.js";
+import { isDatabaseConnected } from "../index.js";
 import HandleGlobalError from "../utils/HandleGlobalError.js";
 
 const checkDatabaseConnection = (req, res, next) => {
