@@ -1,6 +1,6 @@
-import { environment } from "./utils/environment.js";
 import dotenv from "dotenv";
 dotenv.config();
+import { environment } from "./utils/environment.js";
 import app from "./app.js";
 import connectToDB from "./utils/connectToDB.js";
 
