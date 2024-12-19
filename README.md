@@ -3,7 +3,7 @@
 <p>It's a Note making web app build in MERN stack where you can write your notes, create notebooks and tag each note to filter out notes</p>
 <p>It's a Note making web app build in MERN stack showing all CRUD operations.</p>
 
-You can visit the [Live website](https://notable-client.vercel.app)
+[Preview](https://amit-general-bucket.s3.ap-south-1.amazonaws.com/videos/notable.mp4)
 
 ## Table of Contents
 
