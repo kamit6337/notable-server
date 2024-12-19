@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node  --import ./utils/instrument.mjs index.js",
-    "dev": "nodemon --import ./utils/instrument.mjs index.js"
+    "dev": "nodemon --legacy-watch index.js"
   },
   "keywords": [],
   "author": "",
