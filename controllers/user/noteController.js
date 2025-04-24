@@ -1,31 +1,21 @@
 import catchAsyncError from "../../utils/catchAsyncError.js";
-import { Note } from "../../models/NoteModel.js";
-import { Tag } from "../../models/TagModel.js";
-import { changeUnderScoreId } from "../../utils/javaScript/basicJS.js";
 import HandleGlobalError from "../../utils/HandleGlobalError.js";
-import { Notebook } from "../../models/NotebookModel.js";
-
-const TRUE = "true";
+import createNoteDB from "../../databases/notes/createNoteDB.js";
+import updateNoteDB from "../../databases/notes/updateNoteDB.js";
+import deleteNoteDB from "../../databases/notes/deleteNoteDB.js";
 
 // NOTE: GET NOTES
 export const getNotes = catchAsyncError(async (req, res, next) => {
-  const user = req.userId;
+  const userId = req.userId;
 
-  const notes = await Note.find({
-    user,
-  })
-    .lean()
-    .select("-__v");
+  const notes = await getNotesByUserIdDB(userId);
 
-  res.status(200).json({
-    message: "Notes",
-    data: notes,
-  });
+  res.status(200).json(notes);
 });
 
 // NOTE: CREATE NOTES
 export const createNote = catchAsyncError(async (req, res, next) => {
-  const user = req.userId;
+  const userId = req.userId;
 
   const { id, tagId } = req.body; //THIS IS NOTEBOOK ID and NOTEBOOK NAME IN WHICH NOTE IS CREATED
 
@@ -35,7 +25,7 @@ export const createNote = catchAsyncError(async (req, res, next) => {
     );
 
   const obj = {
-    user,
+    user: userId,
     notebook: id,
   };
 
@@ -43,12 +33,9 @@ export const createNote = catchAsyncError(async (req, res, next) => {
     obj.tags = [tagId];
   }
 
-  const note = await Note.create(obj);
+  const note = await createNoteDB(userId, obj);
 
-  res.status(200).json({
-    message: "New Note created",
-    data: note,
-  });
+  res.status(200).json(note);
 });
 
 // NOTE: UPDATE NOTES
@@ -70,80 +57,48 @@ export const updateNote = catchAsyncError(async (req, res, next) => {
 
   // WORK: UPDATE NOTE TITLE IN NOTE AND TAGS
   if (title) {
-    const updatedNote = await Note.findOneAndUpdate(
-      {
-        _id: id,
-      },
-      {
-        ...obj,
-        updatedAt: Date.now(),
-      },
-      {
-        new: true,
-      }
-    );
+    const updatedNote = await updateNoteDB(id, obj);
 
-    res.status(200).json({
-      message: "Changed Note Title",
-      data: updatedNote,
-    });
+    res.status(200).json(updatedNote);
     return;
   }
 
   // WORK: ADD TAG TO NOTE
   if (isTagAdd && tagId) {
-    const updatedNote = await Note.findOneAndUpdate(
-      { _id: id },
-      {
-        $push: { tags: tagId },
-        updatedAt: Date.now(),
-      },
-      {
-        new: true,
-      }
-    );
+    const obj = {
+      $push: { tags: tagId },
+    };
 
-    res.status(200).json({
-      message: "Tag added to Note",
-      data: updatedNote,
-    });
+    const updatedNote = await updateNoteDB(id, obj);
+
+    res.status(200).json(updatedNote);
     return;
   }
 
   // WORK: REMOVE TAG FROM NOTE
   if (isTagRemove && tagId) {
-    const updatedNote = await Note.findOneAndUpdate(
-      { _id: id },
-      {
-        $pull: { tags: tagId },
-        updatedAt: Date.now(),
-      },
-      {
-        new: true,
-      }
-    );
+    const obj = {
+      $pull: { tags: tagId },
+    };
 
-    res.status(200).json({
-      message: "Tag removed from Note",
-      data: updatedNote,
-    });
+    const updatedNote = await updateNoteDB(id, obj);
+
+    res.status(200).json(updatedNote);
     return;
   }
 });
 
 // NOTE: DELETE NOTES
 export const deleteNote = catchAsyncError(async (req, res, next) => {
+  const userId = req.userId;
+
   const { id } = req.query;
 
   if (!id)
     return next(new HandleGlobalError("Note Name must be provided", 404));
 
   // WORK: DELETE NOTE FROM NOTE
-  await Note.deleteOne({
-    _id: id,
-  });
+  await deleteNoteDB(userId, id);
 
-  res.status(200).json({
-    message: "Note is deleted",
-  });
+  res.status(200).json("Note is deleted");
 });

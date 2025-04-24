@@ -2,6 +2,8 @@ import catchAsyncError from "../../utils/catchAsyncError.js";
 import { Notebook } from "../../models/NotebookModel.js";
 import { Note } from "../../models/NoteModel.js";
 import HandleGlobalError from "../../utils/HandleGlobalError.js";
+import updateNotebookDB from "../../databases/notebooks/updateNotebookDB.js";
+import updateNoteDB from "../../databases/notes/updateNoteDB.js";
 
 // NOTE: MAKE NOTE AND NOTEBOOK SHORTCUT
 export const createShortcut = catchAsyncError(async (req, res, next) => {
@@ -15,46 +17,25 @@ export const createShortcut = catchAsyncError(async (req, res, next) => {
 
   // WORK: CREATE SHORTCUT TO NOTEBOOK
   if (notebookId) {
-    const updateNotebook = await Notebook.findOneAndUpdate(
-      {
-        _id: notebookId,
-      },
-      {
-        shortcut: true,
-        updatedAt: Date.now(),
-      },
-      {
-        new: true,
-      }
-    );
+    const obj = {
+      shortcut: true,
+    };
 
-    res.status(200).json({
-      message: "Shortcut is Added to notebook",
-      data: updateNotebook,
-    });
+    const updateNotebook = await updateNotebookDB(notebookId, obj);
 
+    res.status(200).json(updateNotebook);
     return;
   }
 
   // WORK: CREATE SHORTCUT TO NOTE
   if (noteId) {
-    const updateNote = await Note.findOneAndUpdate(
-      {
-        _id: noteId,
-      },
-      {
-        shortcut: true,
-        updatedAt: Date.now(),
-      },
-      {
-        new: true,
-      }
-    );
+    const obj = {
+      shortcut: true,
+    };
 
-    res.status(200).json({
-      message: "Shortcut is added is Note",
-      data: updateNote,
-    });
+    const updateNote = await updateNoteDB(noteId, obj);
+
+    res.status(200).json(updateNote);
     return;
   }
 });
@@ -71,46 +52,25 @@ export const updateShortcut = catchAsyncError(async (req, res, next) => {
 
   // WORK: REMOVED SHORTCUT TO NOTEBOOK
   if (notebookId) {
-    const updateNotebook = await Notebook.findOneAndUpdate(
-      {
-        _id: notebookId,
-      },
-      {
-        shortcut: false,
-        updatedAt: Date.now(),
-      },
-      {
-        new: true,
-      }
-    );
+    const obj = {
+      shortcut: false,
+    };
 
-    res.status(200).json({
-      message: "Shortcut is Removed to notebook",
-      data: updateNotebook,
-    });
+    const updateNotebook = await updateNotebookDB(notebookId, obj);
 
+    res.status(200).json(updateNotebook);
     return;
   }
 
   // WORK: REMOVED SHORTCUT TO NOTE
   if (noteId) {
-    const updateNote = await Note.findOneAndUpdate(
-      {
-        _id: noteId,
-      },
-      {
-        shortcut: false,
-        updatedAt: Date.now(),
-      },
-      {
-        new: true,
-      }
-    );
+    const obj = {
+      shortcut: false,
+    };
 
-    res.status(200).json({
-      message: "Shortcut is removed is Note",
-      data: updateNote,
-    });
+    const updateNote = await updateNoteDB(noteId, obj);
+
+    res.status(200).json(updateNote);
     return;
   }
 });
