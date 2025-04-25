@@ -4,7 +4,11 @@ import { setNewNoteIntoRedis } from "../../redis/notes/notesFromRedis.js";
 const createNoteDB = async (userId, obj) => {
   const note = await Note.create(obj);
 
-  await setNewNoteIntoRedis(userId, obj);
+  console.log("note is created", note);
+
+  await setNewNoteIntoRedis(userId, note);
+
+  console.log("note is send");
 
   return note;
 };

@@ -24,7 +24,11 @@ export const setNotesToUserInRedis = async (userId, notes) => {
   const multi = redisClient.multi();
 
   for (const note of notes) {
-    multi.zadd(`User-Notes:${userId}`, note.createdAt, note._id?.toString());
+    multi.zadd(
+      `User-Notes:${userId}`,
+      new Date(note.createdAt).getTime(),
+      note._id?.toString()
+    );
 
     multi.set(`Note:${note._id?.toString()}`, JSON.stringify(note), "EX", 3600);
   }
@@ -36,9 +40,11 @@ export const setNotesToUserInRedis = async (userId, notes) => {
 export const setNewNoteIntoRedis = async (userId, note) => {
   if (!userId || !note) return;
 
+  console.log("note from redis", note);
+
   await redisClient.zadd(
     `User-Notes:${userId}`,
-    note.createdAt,
+    new Date(note.createdAt).getTime(),
     note._id?.toString()
   );
 

@@ -30,7 +30,7 @@ export const setNotebooksToUserInRedis = async (userId, notebooks) => {
   for (const notebook of notebooks) {
     multi.zadd(
       `User-Notebooks:${userId}`,
-      notebook.createdAt,
+      new Date(notebook.createdAt).getTime(),
       notebook._id?.toString()
     );
 
@@ -51,7 +51,7 @@ export const setNewNotebookIntoRedis = async (userId, notebook) => {
 
   await redisClient.zadd(
     `User-Notebooks:${userId}`,
-    notebook.createdAt,
+    new Date(notebook.createdAt).getTime(),
     notebook._id?.toString()
   );
 

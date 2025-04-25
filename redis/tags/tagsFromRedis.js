@@ -24,7 +24,11 @@ export const setTagsToUserInRedis = async (userId, tags) => {
   const multi = redisClient.multi();
 
   for (const tag of tags) {
-    multi.zadd(`User-Tags:${userId}`, tag.createdAt, tag._id?.toString());
+    multi.zadd(
+      `User-Tags:${userId}`,
+      new Date(tag.createdAt).getTime(),
+      tag._id?.toString()
+    );
 
     multi.set(`Tag:${tag._id?.toString()}`, JSON.stringify(tag), "EX", 3600);
   }
@@ -38,7 +42,7 @@ export const setNewTagIntoRedis = async (userId, tag) => {
 
   await redisClient.zadd(
     `User-Tags:${userId}`,
-    tag.createdAt,
+    new Date(tag.createdAt).getTime(),
     tag._id?.toString()
   );
 

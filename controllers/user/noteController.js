@@ -3,6 +3,7 @@ import HandleGlobalError from "../../utils/HandleGlobalError.js";
 import createNoteDB from "../../databases/notes/createNoteDB.js";
 import updateNoteDB from "../../databases/notes/updateNoteDB.js";
 import deleteNoteDB from "../../databases/notes/deleteNoteDB.js";
+import getNotesByUserIdDB from "../../databases/notes/getNotesByUserIdDB.js";
 
 // NOTE: GET NOTES
 export const getNotes = catchAsyncError(async (req, res, next) => {
