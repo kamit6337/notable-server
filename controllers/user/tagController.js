@@ -8,6 +8,7 @@ import updateNoteDB from "../../databases/notes/updateNoteDB.js";
 import updateTagDB from "../../databases/tags/updateTagDB.js";
 import removeNotesFromTagDB from "../../databases/notes/removeNotesFromTagDB.js";
 import deleteTagDB from "../../databases/tags/deleteTagDB.js";
+import getNotesByTagIdDB from "../../databases/notes/getNotesByTagIdDB.js";
 
 // NOTE: GET ALL TAGS
 export const getTags = catchAsyncError(async (req, res, next) => {
