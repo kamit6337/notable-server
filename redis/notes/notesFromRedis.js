@@ -40,8 +40,6 @@ export const setNotesToUserInRedis = async (userId, notes) => {
 export const setNewNoteIntoRedis = async (userId, note) => {
   if (!userId || !note) return;
 
-  console.log("note from redis", note);
-
   await redisClient.zadd(
     `User-Notes:${userId}`,
     new Date(note.createdAt).getTime(),
